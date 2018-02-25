@@ -46,7 +46,7 @@ exports.register = (server, options, next) => {
                 validate: {
                     payload: user
                 },
-                handler: handler.save
+                handler     : handler.save
             },
         },
         {
@@ -61,6 +61,12 @@ exports.register = (server, options, next) => {
                 description : 'Modifie un utilisateur existant',
                 notes       : 'Update user',
                 tags        : ['api'],
+                validate: {
+                    payload: user,
+                    params:{
+                        id: Joi.string()
+                    }
+                },
                 handler     : handler.findOneByIdAndUpdate
             },
         },
@@ -71,6 +77,11 @@ exports.register = (server, options, next) => {
                 description : 'Supprime un utilisateur existant',
                 notes       : 'Delete user',
                 tags        : ['api'],
+                validate: {
+                    params:{
+                        id: Joi.string()
+                    }
+                },
                 handler     : handler.findOneByIdAndRemove
             },
         },
