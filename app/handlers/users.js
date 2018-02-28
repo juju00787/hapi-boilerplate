@@ -1,46 +1,68 @@
 'use strict';
 
-module.exports.save = ( request, response ) => {
-    request.server.plugins.users.save(request.payload)
-        .then(user => response(user).code(201))
-        .catch(err => response('error'));
+const faker = require('faker');
+const Promise = require('bluebird');
+
+module.exports.insert = (request, response) => {
+    request.server.plugins.users.insert(request.payload)
+        .then((user) => {
+            response(user).code(201);
+        })
+        .catch(err => response(err));
 };
 
-module.exports.findAll = ( request, response ) => {
+module.exports.findAll = (request, response) => {
     request.server.plugins.users.findAll()
-      .then(user => response(user).code(201))
-      .catch(err => response('error'));
+        .then(users => response(users).code(201))
+        .catch(err => response(err));
 };
 
-module.exports.findOneById = ( request, response ) => {
-    request.server.database.users.find({ _id: request.params.id}, function( err, users ) {
-        var userMap = {};
-
-        users.forEach( function( user ) {
-            userMap[user._id] = user;
-        });
-        response( null,  {
-            result : userMap
-        } );
-    } );
+module.exports.findOneById = (request, response) => {
+    request.server.plugins.users.findOneById(request.params._id)
+        .then((user) => {
+            response(user).code(201);
+        })
+        .catch(err => response(err));
 };
 
-module.exports.findOneByIdAndRemove = ( request, response ) => {
-    request.server.plugins.users.findOneByIdAndRemove(request)
+module.exports.findOneByIdAndRemove = (request, response) => {
+    request.server.plugins.users.findOneByIdAndRemove(request.params._id)
         .then(user => response(user).code(201))
-        .catch(err => response('error'));
+        .catch(err => response(err));
 };
 
-module.exports.findOneByIdAndUpdate = ( request, response ) => {
-    let data = JSON.parse( request.payload )
+module.exports.findOneByIdAndUpdate = (request, response) => {
+    request.server.plugins.users.findOneByIdAndUpdate(request.params._id, request.payload)
+        .then((user) => {
+            reply(user).code(201);
+        })
+        .catch(err => response(err));
+};
 
-    request.server.database.update(
-        { login: data.login },
-        { password: data.password },
-        { email: data.email },
-        { firstname: data.firstname },
-        function ( err, raw ) {
-            if( err ) return handleError( err );
-        }
-    )
+module.exports.createUsers = (request, response) => {
+    let users = [];
+    for (let i = 0; i < 100; i++) {
+        users.push({
+            login : faker.name.firstName(),
+            password : faker.internet.password(),
+            email : faker.internet.email(),
+            firstname : faker.name.firstName(),
+            lastname : faker.name.lastName(),
+        });
+    }
+    return Promise.map(users, user => request.server.plugins.users.createUsers(user));
+};
+
+module.exports.login = (request, response) => {
+    request.server.plugins.users.login(request.payload)
+        .then(user => response(user).code(201))
+        .catch(err => response(err));
+};
+
+module.exports.changePassword = (request, response) => {
+    request.server.plugins.users.changePassword(request.params._id, request.payload.password)
+        .then((user) => {
+            response('Password modified !').code(201);
+        })
+        .catch(err => reply(err));
 };

@@ -16,23 +16,23 @@ const all           = {
         },
     },
     databases : {
-      hapi : {
-        adapter           : 'k7-mongoose',
-        connectionString  : `mongodb://${process.env.MONGO_HOST}/${process.env.MONGO_NAME}`,
-        connectionOptions : {
-          user   : process.env.MONGO_USER,
-          pass   : process.env.MONGO_PASSWORD,
-          server : {
-            auto_reconnect : true,
-            socketOptions  : { keepAlive : 1 },
-          },
-          replset : {
-            auto_reconnect : true,
-            socketOptions  : { keepAlive : 1 },
-          }
+        hapi : {
+            adapter           : 'k7-mongoose',
+            connectionString  : `mongodb://${process.env.MONGO_HOST}/${process.env.MONGO_NAME}`,
+            connectionOptions : {
+                user   : process.env.MONGO_USER,
+                pass   : process.env.MONGO_PASSWORD,
+                server : {
+                    auto_reconnect : true,
+                    socketOptions  : { keepAlive : 1 },
+                },
+                replset : {
+                    auto_reconnect : true,
+                    socketOptions  : { keepAlive : 1 },
+                },
+            },
         },
-      },
-    }
+    },
 };
 
 module.exports = _.merge(all, env);
